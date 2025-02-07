@@ -1,3 +1,6 @@
+// No início do arquivo
+console.log('Inicializando Firebase...');
+
 // Configuração do Firebase
 const firebaseConfig = {
     apiKey: "AIzaSyBzguzTg54A5KgOH_2-UtNMSiLzUwmWlnE",
@@ -12,6 +15,9 @@ const firebaseConfig = {
 if (!firebase.apps.length) {
     firebase.initializeApp(firebaseConfig);
 }
+
+// Após inicializar o Firebase
+console.log('Firebase inicializado com sucesso');
 
 // Verificar estado da autenticação em todas as páginas
 firebase.auth().onAuthStateChanged((user) => {

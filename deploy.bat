@@ -46,7 +46,7 @@ git add .
 echo.
 echo Criando commit...
 set "data=%date:~0,2%/%date:~3,2%/%date:~6,4% %time:~0,2%:%time:~3,2%"
-git commit -m "Atualização: %data%"
+git commit -m "Atualizacao: %data%"
 
 :: Envia para o GitHub
 echo.

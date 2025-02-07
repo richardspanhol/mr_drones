@@ -1,4 +1,4 @@
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', () => {
     console.log('Iniciando script do menu');
     
     const menuToggle = document.getElementById('menu-toggle');
@@ -18,28 +18,30 @@ document.addEventListener('DOMContentLoaded', function() {
     function closeMenu() {
         console.log('Fechando menu');
         mainNav.classList.remove('nav-open');
+        mainNav.classList.add('nav-closed');
     }
     
     // Toggle do menu
-    menuToggle.addEventListener('click', function(e) {
+    menuToggle.addEventListener('click', () => {
         console.log('Botão do menu clicado');
-        e.stopPropagation();
         mainNav.classList.toggle('nav-open');
+        mainNav.classList.toggle('nav-closed');
         console.log('Estado do menu:', mainNav.classList.contains('nav-open') ? 'aberto' : 'fechado');
     });
     
     // Fechar menu ao clicar em um link
-    mainNav.addEventListener('click', function(e) {
-        console.log('Clique no menu:', e.target.tagName);
-        if (e.target.tagName === 'A') {
+    const menuLinks = mainNav.getElementsByTagName('a');
+    for (let link of menuLinks) {
+        link.addEventListener('click', () => {
+            console.log('Clique no menu:', link.tagName);
             closeMenu();
-        }
-    });
+        });
+    }
     
-    // Fechar menu ao clicar fora dele
-    document.addEventListener('click', function(e) {
+    // Fechar menu ao clicar fora
+    document.addEventListener('click', (e) => {
         console.log('Clique no documento');
-        if (!e.target.closest('header')) {
+        if (!mainNav.contains(e.target) && !menuToggle.contains(e.target)) {
             closeMenu();
         }
     });

@@ -176,17 +176,64 @@ nav a:hover, nav a.active {
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0,0,0,0.5);
-    z-index: 1100;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    overflow-y: auto;
 }
 
 .modal-content {
-    background: white;
+    background-color: #fff;
     margin: 20px auto;
-    padding: 2rem;
-    border-radius: 10px;
-    width: 95%;
-    max-width: 600px;
+    padding: 20px;
+    border-radius: 8px;
+    width: 90%;
+    max-width: 500px;
+    position: relative;
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+/* Aumentar tamanho dos ícones de ação */
+.acoes-item button {
+    font-size: 1.5rem;
+    padding: 8px 12px;
+    margin: 0 5px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.acoes-item button i {
+    font-size: 1.5rem;
+}
+
+/* Cores dos botões de ação */
+.btn-editar { color: #2196F3; }
+.btn-concluir { color: #4CAF50; }
+.btn-excluir { color: #f44336; }
+
+/* Hover effects para melhor feedback */
+.acoes-item button:hover {
+    transform: scale(1.1);
+}
+
+/* Ajustes para telas menores */
+@media (max-width: 768px) {
+    .modal-content {
+        margin: 10px;
+        width: calc(100% - 20px);
+        padding: 15px;
+    }
+    
+    .form-buttons {
+        position: sticky;
+        bottom: 0;
+        background: white;
+        padding: 10px 0;
+        margin-top: 20px;
+        box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+    }
 }
 
 /* Responsividade */
@@ -249,4 +296,43 @@ nav a:hover, nav a.active {
     color: var(--danger-color);
     text-align: center;
     margin-top: 1rem;
+}
+
+/* Estilo para itens de relatório */
+.item-relatorio {
+    padding: 15px;
+    border-bottom: 1px solid #eee;
+    margin-bottom: 10px;
+}
+
+.item-relatorio:last-child {
+    border-bottom: none;
+}
+
+.item-info h3 {
+    margin-bottom: 10px;
+    color: var(--primary-color);
+}
+
+.item-info p {
+    margin: 5px 0;
+}
+
+.item-info i {
+    width: 20px;
+    text-align: center;
+    margin-right: 8px;
+}
+
+/* Mensagens de feedback */
+.sem-dados {
+    text-align: center;
+    padding: 20px;
+    color: #666;
+}
+
+.erro {
+    text-align: center;
+    padding: 20px;
+    color: #f44336;
 }

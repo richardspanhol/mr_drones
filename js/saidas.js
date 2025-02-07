@@ -1,149 +1,137 @@
-// Configuração do Firebase
-const firebaseConfig = {
-    apiKey: "AIzaSyBzguzTg54A5KgOH_2-UtNMSiLzUwmWlnE",
-    authDomain: "mr-drones.firebaseapp.com",
-    projectId: "mr-drones",
-    storageBucket: "mr-drones.firebasestorage.app",
-    messagingSenderId: "891587224313",
-    appId: "1:891587224313:web:3cad5fc9bdcde4d1293828",
-    measurementId: "G-TQE810ZR3Y"
-};
+document.addEventListener('DOMContentLoaded', () => {
+    const db = firebase.firestore();
+    const modal = document.getElementById('modal-saida');
+    const form = document.getElementById('form-saida');
+    let saidaEmEdicao = null;
 
-// Initialize Firebase
-firebase.initializeApp(firebaseConfig);
-const db = firebase.firestore();
+    // Botão Nova Saída
+    document.getElementById('nova-saida').addEventListener('click', () => {
+        saidaEmEdicao = null;
+        form.reset();
+        form.querySelector('h2').textContent = 'Registrar Saída';
+        modal.style.display = 'block';
+        
+        // Define a data atual como padrão
+        const hoje = new Date().toISOString().split('T')[0];
+        form.data.value = hoje;
+    });
 
-// Elementos do DOM
-const modal = document.getElementById('modal-saida');
-const form = document.getElementById('form-saida');
-const listaSaidas = document.getElementById('lista-saidas');
-const btnNovaSaida = document.getElementById('nova-saida');
-
-// Event Listeners
-btnNovaSaida.addEventListener('click', () => {
-    abrirModal();
-});
-
-form.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    
-    const saida = {
-        tipo: form.tipo.value,
-        descricao: form.descricao.value,
-        local: form.local.value,
-        data: form.data.value,
-        valor: parseFloat(form.valor.value),
-        formaPagamento: form.formaPagamento.value,
-        dataCadastro: new Date()
+    // Fechar Modal
+    window.fecharModal = () => {
+        modal.style.display = 'none';
+        form.reset();
     };
 
-    try {
-        if (form.dataset.id) {
-            await db.collection('saidas').doc(form.dataset.id).update(saida);
-        } else {
-            await db.collection('saidas').add(saida);
-        }
-        fecharModal();
-        carregarSaidas();
-    } catch (error) {
-        console.error('Erro ao salvar saída:', error);
-        alert('Erro ao salvar saída');
-    }
-});
+    // Salvar Saída
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
 
-// Funções
-function abrirModal(saida = null) {
-    modal.style.display = 'block';
-    if (saida) {
-        form.tipo.value = saida.tipo;
-        form.descricao.value = saida.descricao;
-        form.local.value = saida.local;
-        form.data.value = saida.data;
-        form.valor.value = saida.valor;
-        form.formaPagamento.value = saida.formaPagamento;
-        form.dataset.id = saida.id;
-    } else {
-        form.reset();
-        delete form.dataset.id;
-    }
-}
+        const saida = {
+            tipo: form.tipo.value,
+            descricao: form.descricao.value,
+            valor: parseFloat(form.valor.value),
+            data: form.data.value,
+            formaPagamento: form.formaPagamento.value,
+            timestamp: firebase.firestore.FieldValue.serverTimestamp()
+        };
 
-function fecharModal() {
-    modal.style.display = 'none';
-    form.reset();
-}
-
-async function carregarSaidas() {
-    try {
-        const snapshot = await db.collection('saidas')
-            .orderBy('data', 'desc')
-            .get();
-        
-        listaSaidas.innerHTML = '';
-        
-        snapshot.forEach(doc => {
-            const saida = { id: doc.id, ...doc.data() };
-            const element = criarElementoSaida(saida);
-            listaSaidas.appendChild(element);
-        });
-    } catch (error) {
-        console.error('Erro ao carregar saídas:', error);
-        alert('Erro ao carregar saídas');
-    }
-}
-
-function criarElementoSaida(saida) {
-    const div = document.createElement('div');
-    div.className = 'saida-item';
-    const data = new Date(saida.data).toLocaleDateString();
-    
-    div.innerHTML = `
-        <h3>${saida.tipo}</h3>
-        <p><i class="fas fa-info-circle"></i> ${saida.descricao}</p>
-        <p><i class="fas fa-map-marker-alt"></i> ${saida.local}</p>
-        <p><i class="fas fa-calendar"></i> ${data}</p>
-        <p><i class="fas fa-dollar-sign"></i> R$ ${saida.valor.toFixed(2)}</p>
-        <p><i class="fas fa-credit-card"></i> ${saida.formaPagamento}</p>
-        <div class="acoes">
-            <button onclick="editarSaida('${saida.id}')" class="btn-edit">
-                <i class="fas fa-edit"></i>
-            </button>
-            <button onclick="excluirSaida('${saida.id}')" class="btn-delete">
-                <i class="fas fa-trash"></i>
-            </button>
-        </div>
-    `;
-    return div;
-}
-
-// Funções globais
-window.abrirModal = abrirModal;
-window.fecharModal = fecharModal;
-
-window.editarSaida = async (id) => {
-    try {
-        const doc = await db.collection('saidas').doc(id).get();
-        if (doc.exists) {
-            const saida = { id: doc.id, ...doc.data() };
-            abrirModal(saida);
-        }
-    } catch (error) {
-        console.error('Erro ao carregar saída:', error);
-        alert('Erro ao carregar saída');
-    }
-};
-
-window.excluirSaida = async (id) => {
-    if (confirm('Tem certeza que deseja excluir esta saída?')) {
         try {
-            await db.collection('saidas').doc(id).delete();
+            if (saidaEmEdicao) {
+                await db.collection('saidas').doc(saidaEmEdicao).update(saida);
+            } else {
+                await db.collection('saidas').add(saida);
+            }
+            
+            fecharModal();
             carregarSaidas();
         } catch (error) {
-            console.error('Erro ao excluir saída:', error);
-            alert('Erro ao excluir saída');
+            console.error('Erro ao salvar saída:', error);
+            alert('Erro ao salvar saída. Tente novamente.');
+        }
+    });
+
+    // Carregar Saídas
+    async function carregarSaidas() {
+        try {
+            const snapshot = await db.collection('saidas')
+                .orderBy('data', 'desc')
+                .get();
+
+            const container = document.getElementById('lista-saidas');
+            container.innerHTML = '';
+
+            if (snapshot.empty) {
+                container.innerHTML = '<p class="sem-dados">Nenhuma saída registrada</p>';
+                return;
+            }
+
+            snapshot.forEach(doc => {
+                const saida = doc.data();
+                const data = new Date(saida.data);
+
+                const element = document.createElement('div');
+                element.className = 'saida-item';
+                element.innerHTML = `
+                    <div class="saida-info">
+                        <h3>${saida.tipo}</h3>
+                        <p><i class="fas fa-info-circle"></i> ${saida.descricao}</p>
+                        <p><i class="fas fa-calendar"></i> ${data.toLocaleDateString('pt-BR')}</p>
+                        <p><i class="fas fa-money-bill-wave"></i> R$ ${saida.valor.toFixed(2)}</p>
+                        <p><i class="fas fa-credit-card"></i> ${saida.formaPagamento}</p>
+                    </div>
+                    <div class="acoes-item">
+                        <button onclick="editarSaida('${doc.id}')" class="btn-editar">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button onclick="excluirSaida('${doc.id}')" class="btn-excluir">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                `;
+
+                container.appendChild(element);
+            });
+        } catch (error) {
+            console.error('Erro ao carregar saídas:', error);
+            alert('Erro ao carregar saídas');
         }
     }
-};
 
-// Inicialização
-carregarSaidas(); 
+    // Funções globais
+    window.fecharModal = fecharModal;
+
+    window.editarSaida = async (id) => {
+        try {
+            const doc = await db.collection('saidas').doc(id).get();
+            const saida = doc.data();
+
+            saidaEmEdicao = id;
+            form.tipo.value = saida.tipo;
+            form.descricao.value = saida.descricao;
+            form.valor.value = saida.valor;
+            form.data.value = saida.data;
+            form.formaPagamento.value = saida.formaPagamento;
+
+            form.querySelector('h2').textContent = 'Editar Saída';
+            modal.style.display = 'block';
+        } catch (error) {
+            console.error('Erro ao carregar saída para edição:', error);
+            alert('Erro ao carregar saída para edição');
+        }
+    };
+
+    window.excluirSaida = async (id) => {
+        if (confirm('Tem certeza que deseja excluir esta saída?')) {
+            try {
+                await db.collection('saidas').doc(id).delete();
+                carregarSaidas();
+            } catch (error) {
+                console.error('Erro ao excluir saída:', error);
+                alert('Erro ao excluir saída. Tente novamente.');
+            }
+        }
+    };
+
+    // Carregar dados iniciais
+    carregarSaidas();
+}); 
