@@ -1,17 +1,6 @@
-// Configuração do Firebase
-const firebaseConfig = {
-    apiKey: "AIzaSyBzguzTg54A5KgOH_2-UtNMSiLzUwmWlnE",
-    authDomain: "mr-drones.firebaseapp.com",
-    projectId: "mr-drones",
-    storageBucket: "mr-drones.firebasestorage.app",
-    messagingSenderId: "891587224313",
-    appId: "1:891587224313:web:3cad5fc9bdcde4d1293828",
-    measurementId: "G-TQE810ZR3Y"
-};
-
-// Initialize Firebase
-firebase.initializeApp(firebaseConfig);
+// Remova toda a parte de configuração do Firebase, pois já está no auth.js
 const db = firebase.firestore();
+console.log('Firestore inicializado em servicos.js');
 
 // Elementos do DOM
 const modal = document.getElementById('modal-servico');
@@ -202,4 +191,55 @@ window.concluirServico = async (id) => {
 };
 
 // Inicialização
-carregarServicos(); 
+document.addEventListener('DOMContentLoaded', () => {
+    const db = firebase.firestore();
+    const listaServicos = document.getElementById('lista-servicos');
+    const modal = document.getElementById('modal-servico');
+    let servicoAtual = null;
+
+    // Carregar serviços
+    function carregarServicos() {
+        listaServicos.innerHTML = '';
+        db.collection('servicos').get()
+            .then((snapshot) => {
+                snapshot.forEach((doc) => {
+                    const servico = { id: doc.id, ...doc.data() };
+                    const element = criarElementoServico(servico);
+                    listaServicos.appendChild(element);
+                });
+            })
+            .catch((error) => {
+                console.error('Erro ao carregar serviços:', error);
+            });
+    }
+
+    // Carregar clientes para o select
+    function carregarClientesSelect() {
+        const selectCliente = document.getElementById('cliente');
+        selectCliente.innerHTML = '<option value="">Selecione o cliente</option>';
+        
+        db.collection('clientes').get()
+            .then((snapshot) => {
+                snapshot.forEach((doc) => {
+                    const cliente = doc.data();
+                    const option = document.createElement('option');
+                    option.value = doc.id;
+                    option.textContent = cliente.nome;
+                    selectCliente.appendChild(option);
+                });
+            })
+            .catch((error) => {
+                console.error('Erro ao carregar clientes:', error);
+            });
+    }
+
+    // Inicialização
+    document.getElementById('novo-servico').addEventListener('click', () => {
+        servicoAtual = null;
+        document.getElementById('form-servico').reset();
+        carregarClientesSelect();
+        modal.style.display = 'block';
+    });
+
+    carregarServicos();
+}); 

@@ -1,25 +1,6 @@
-// Configuração do Firebase
-const firebaseConfig = {
-    apiKey: "AIzaSyBzguzTg54A5KgOH_2-UtNMSiLzUwmWlnE",
-    authDomain: "mr-drones.firebaseapp.com",
-    projectId: "mr-drones",
-    storageBucket: "mr-drones.appspot.com",
-    messagingSenderId: "891587224313",
-    appId: "1:891587224313:web:3cad5fc9bdcde4d1293828"
-};
-
-// Initialize Firebase
-try {
-    if (!firebase.apps.length) {
-        firebase.initializeApp(firebaseConfig);
-    }
-    console.log('Firebase inicializado com sucesso');
-} catch (error) {
-    console.error('Erro ao inicializar Firebase:', error);
-}
-
+// Remova toda a parte de configuração do Firebase, pois já está no auth.js
 const db = firebase.firestore();
-console.log('Firestore inicializado');
+console.log('Firestore inicializado em clientes.js');
 
 // Elementos do DOM
 const modal = document.getElementById('modal-cliente');
@@ -176,4 +157,7 @@ window.salvarCliente = async function() {
 };
 
 // Inicialização
-carregarClientes();
+document.addEventListener('DOMContentLoaded', () => {
+    console.log('DOM carregado em clientes.js');
+    carregarClientes();
+});
