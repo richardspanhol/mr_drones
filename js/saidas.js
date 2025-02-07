@@ -8,7 +8,6 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('nova-saida').addEventListener('click', () => {
         saidaEmEdicao = null;
         form.reset();
-        form.querySelector('h2').textContent = 'Registrar Saída';
         modal.style.display = 'block';
         
         // Define a data atual como padrão
@@ -25,28 +24,32 @@ document.addEventListener('DOMContentLoaded', () => {
     // Salvar Saída
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
-
-        const saida = {
-            tipo: form.tipo.value,
-            descricao: form.descricao.value,
-            valor: parseFloat(form.valor.value),
-            data: form.data.value,
-            formaPagamento: form.formaPagamento.value,
-            timestamp: firebase.firestore.FieldValue.serverTimestamp()
-        };
+        console.log('Salvando saída...');
 
         try {
+            const saida = {
+                tipo: form.tipo.value,
+                descricao: form.descricao.value,
+                valor: parseFloat(form.valor.value),
+                data: form.data.value,
+                formaPagamento: form.formaPagamento.value,
+                timestamp: firebase.firestore.FieldValue.serverTimestamp()
+            };
+
+            console.log('Dados da saída:', saida);
+
             if (saidaEmEdicao) {
                 await db.collection('saidas').doc(saidaEmEdicao).update(saida);
             } else {
                 await db.collection('saidas').add(saida);
             }
             
+            console.log('Saída salva com sucesso');
             fecharModal();
-            carregarSaidas();
+            await carregarSaidas();
         } catch (error) {
             console.error('Erro ao salvar saída:', error);
-            alert('Erro ao salvar saída. Tente novamente.');
+            alert('Erro ao salvar saída: ' + error.message);
         }
     });
 
@@ -93,7 +96,7 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         } catch (error) {
             console.error('Erro ao carregar saídas:', error);
-            alert('Erro ao carregar saídas');
+            alert('Erro ao carregar saídas: ' + error.message);
         }
     }
 
@@ -112,11 +115,10 @@ document.addEventListener('DOMContentLoaded', () => {
             form.data.value = saida.data;
             form.formaPagamento.value = saida.formaPagamento;
 
-            form.querySelector('h2').textContent = 'Editar Saída';
             modal.style.display = 'block';
         } catch (error) {
             console.error('Erro ao carregar saída para edição:', error);
-            alert('Erro ao carregar saída para edição');
+            alert('Erro ao carregar saída para edição: ' + error.message);
         }
     };
 
@@ -124,10 +126,10 @@ document.addEventListener('DOMContentLoaded', () => {
         if (confirm('Tem certeza que deseja excluir esta saída?')) {
             try {
                 await db.collection('saidas').doc(id).delete();
-                carregarSaidas();
+                await carregarSaidas();
             } catch (error) {
                 console.error('Erro ao excluir saída:', error);
-                alert('Erro ao excluir saída. Tente novamente.');
+                alert('Erro ao excluir saída: ' + error.message);
             }
         }
     };

@@ -1,48 +1,13 @@
-// Configuração do Firebase
-const firebaseConfig = {
-    apiKey: "AIzaSyBzguzTg54A5KgOH_2-UtNMSiLzUwmWlnE",
-    authDomain: "mr-drones.firebaseapp.com",
-    projectId: "mr-drones",
-    storageBucket: "mr-drones.appspot.com",
-    messagingSenderId: "891587224313",
-    appId: "1:891587224313:web:3cad5fc9bdcde4d1293828"
-};
-
-// Initialize Firebase
-try {
-    if (!firebase.apps.length) {
-        firebase.initializeApp(firebaseConfig);
-    }
-    console.log('Firebase inicializado com sucesso na página inicial');
-} catch (error) {
-    console.error('Erro ao inicializar Firebase:', error);
-}
-
-const db = firebase.firestore();
-console.log('Firestore inicializado na página inicial');
-
-// Elementos do DOM
-const proximosServicos = document.getElementById('proximos-servicos');
-const totalEntradas = document.getElementById('total-entradas');
-const totalSaidas = document.getElementById('total-saidas');
-
-console.log('Elementos encontrados:', {
-    proximosServicos: !!proximosServicos,
-    totalEntradas: !!totalEntradas,
-    totalSaidas: !!totalSaidas
-});
-
-document.addEventListener('DOMContentLoaded', () => {
-    // Remover a configuração do Firebase daqui
+document.addEventListener('DOMContentLoaded', async () => {
     const db = firebase.firestore();
+    console.log('Inicializando página home...');
 
     async function carregarProximosServicos() {
         try {
             console.log('Carregando próximos serviços...');
             const hoje = new Date().toISOString().split('T')[0];
             
-            const servicosRef = db.collection('servicos');
-            const snapshot = await servicosRef
+            const snapshot = await db.collection('servicos')
                 .where('status', '==', 'pendente')
                 .where('data', '>=', hoje)
                 .orderBy('data', 'asc')
@@ -50,9 +15,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 .get();
 
             console.log('Serviços encontrados:', snapshot.size);
-
+            
             const container = document.getElementById('proximos-servicos');
-            container.innerHTML = '';
+            container.innerHTML = '<p class="sem-dados">Carregando serviços...</p>';
 
             if (snapshot.empty) {
                 container.innerHTML = '<p class="sem-dados">Nenhum serviço agendado</p>';
@@ -61,9 +26,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
             snapshot.forEach(doc => {
                 const servico = doc.data();
-                console.log('Serviço:', servico);
                 const data = new Date(servico.data);
-
+                
                 const element = document.createElement('div');
                 element.className = 'servico-item';
                 element.innerHTML = `
@@ -80,13 +44,19 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         } catch (error) {
             console.error('Erro ao carregar próximos serviços:', error);
-            document.getElementById('proximos-servicos').innerHTML = 
-                '<p class="erro">Erro ao carregar serviços</p>';
+            if (error.message.includes('requires an index')) {
+                document.getElementById('proximos-servicos').innerHTML = 
+                    '<p class="erro">Sistema em atualização. Por favor, aguarde alguns minutos.</p>';
+            } else {
+                document.getElementById('proximos-servicos').innerHTML = 
+                    '<p class="erro">Erro ao carregar serviços</p>';
+            }
         }
     }
 
     async function carregarResumoFinanceiro() {
         try {
+            console.log('Carregando resumo financeiro...');
             const hoje = new Date();
             const primeiroDiaMes = new Date(hoje.getFullYear(), hoje.getMonth(), 1);
             const primeiroDiaMesStr = primeiroDiaMes.toISOString().split('T')[0];
@@ -116,6 +86,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 totalSaidas += Number(saida.valor) || 0;
             });
 
+            console.log('Totais:', { entradas: totalEntradas, saidas: totalSaidas });
+
             document.getElementById('total-entradas').textContent = totalEntradas.toFixed(2);
             document.getElementById('total-saidas').textContent = totalSaidas.toFixed(2);
         } catch (error) {
@@ -123,7 +95,10 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    // Expor função para outros módulos
+    window.carregarResumoFinanceiro = carregarResumoFinanceiro;
+
     // Inicializar
-    carregarProximosServicos();
-    carregarResumoFinanceiro();
+    await carregarProximosServicos();
+    await carregarResumoFinanceiro();
 }); 
