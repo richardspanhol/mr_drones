@@ -20,17 +20,19 @@
                 </button>
             </div>
             <nav id="main-nav" class="nav-closed">
-                <a href="../home.html"><i class="fas fa-home"></i> Início</a>
-                <a href="clientes.html" class="active"><i class="fas fa-users"></i> Clientes</a>
-                <a href="servicos.html"><i class="fas fa-drone"></i> Serviços</a>
-                <a href="relatorios.html"><i class="fas fa-chart-bar"></i> Relatórios</a>
-                <a href="saidas.html"><i class="fas fa-money-bill-wave"></i> Saídas</a>
-                <a href="calculadora.html"><i class="fas fa-calculator"></i> Calculadora</a>
+                <!-- O menu será preenchido pelo menu.js -->
             </nav>
         </header>
 
         <main>
             <div class="card">
+                <div class="barra-pesquisa">
+                    <input type="text" 
+                           id="pesquisaCliente" 
+                           placeholder="Pesquisar por nome ou telefone..."
+                           onkeyup="filtrarClientes()">
+                </div>
+
                 <button id="novo-cliente" class="btn-primary">
                     <i class="fas fa-plus"></i> Novo Cliente
                 </button>
@@ -40,6 +42,10 @@
                 </div>
             </div>
         </main>
+
+        <footer class="footer">
+            <p>© 2025 RSystem. Todos os direitos reservados.</p>
+        </footer>
 
         <!-- Modal de Cadastro/Edição -->
         <div id="modal-cliente" class="modal">

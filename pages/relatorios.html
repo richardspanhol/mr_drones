@@ -20,46 +20,73 @@
                 </button>
             </div>
             <nav id="main-nav" class="nav-closed">
-                <a href="../home.html"><i class="fas fa-home"></i> Início</a>
-                <a href="clientes.html"><i class="fas fa-users"></i> Clientes</a>
-                <a href="servicos.html"><i class="fas fa-drone"></i> Serviços</a>
-                <a href="relatorios.html" class="active"><i class="fas fa-chart-bar"></i> Relatórios</a>
-                <a href="saidas.html"><i class="fas fa-money-bill-wave"></i> Saídas</a>
-                <a href="calculadora.html"><i class="fas fa-calculator"></i> Calculadora</a>
+                <!-- O menu será preenchido pelo menu.js -->
             </nav>
         </header>
 
         <main>
             <div class="card">
-                <h2>Filtros</h2>
-                <div class="form-group">
-                    <label for="periodo">Período</label>
-                    <select id="periodo">
-                        <option value="7">Últimos 7 dias</option>
-                        <option value="30" selected>Últimos 30 dias</option>
-                        <option value="90">Últimos 90 dias</option>
-                        <option value="365">Último ano</option>
-                    </select>
+                <div class="filtros">
+                    <div class="form-group">
+                        <label for="periodo">Período</label>
+                        <select id="periodo" onchange="carregarRelatorios()">
+                            <option value="7">Últimos 7 dias</option>
+                            <option value="30" selected>Últimos 30 dias</option>
+                            <option value="90">Últimos 90 dias</option>
+                            <option value="365">Último ano</option>
+                        </select>
+                    </div>
                 </div>
-            </div>
 
-            <div class="card">
-                <h2>Resumo Financeiro</h2>
-                <div class="relatorio-financeiro">
-                    <div class="total-entradas">
-                        <h3>Total de Entradas</h3>
-                        <p>R$ <span id="total-entradas">0,00</span></p>
-                        <small>Serviços Realizados: <span id="qtd-servicos">0</span></small>
+                <div class="relatorio-container">
+                    <div class="relatorio-card">
+                        <div class="relatorio-header">
+                            <h3>Total de Entradas</h3>
+                            <i class="fas fa-arrow-up" style="color: #4CAF50;"></i>
+                        </div>
+                        <div class="relatorio-valor" style="color: #4CAF50;">
+                            R$ <span id="total-entradas">0.00</span>
+                        </div>
+                        <div class="relatorio-info">
+                            <p>
+                                <i class="fas fa-check-circle"></i>
+                                <span id="qtd-servicos">0</span>&nbsp;Serviços Realizados
+                            </p>
+                        </div>
                     </div>
-                    <div class="total-saidas">
-                        <h3>Total de Saídas</h3>
-                        <p>R$ <span id="total-saidas">0,00</span></p>
-                        <small>Despesas: <span id="qtd-saidas">0</span></small>
+
+                    <div class="relatorio-card">
+                        <div class="relatorio-header">
+                            <h3>Total de Saídas</h3>
+                            <i class="fas fa-arrow-down" style="color: #f44336;"></i>
+                        </div>
+                        <div class="relatorio-valor" style="color: #f44336;">
+                            R$ <span id="total-saidas">0.00</span>
+                        </div>
+                        <div class="relatorio-info">
+                            <p>
+                                <i class="fas fa-file-invoice"></i>
+                                <span id="qtd-saidas">0</span>&nbsp;Saídas
+                            </p>
+                        </div>
                     </div>
-                    <div class="lucro">
-                        <h3>Lucro</h3>
-                        <p>R$ <span id="lucro">0,00</span></p>
+
+                    <div class="relatorio-card">
+                        <div class="relatorio-header">
+                            <h3>Lucro</h3>
+                            <i class="fas fa-chart-line" style="color: #2196F3;"></i>
+                        </div>
+                        <div class="relatorio-valor" style="color: #2196F3;">
+                            R$ <span id="lucro">0.00</span>
+                        </div>
+                        <div class="relatorio-info">
+                            <p><i class="fas fa-percentage"></i> Margem de Lucro: <span id="margem-lucro">0</span>%</p>
+                        </div>
                     </div>
+                </div>
+
+                <div class="relatorio-periodo">
+                    <p>Período: <span id="periodo-atual">Últimos 30 dias</span></p>
                 </div>
             </div>
 

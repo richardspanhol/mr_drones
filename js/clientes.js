@@ -36,40 +36,75 @@ function fecharModal() {
     form.reset();
 }
 
+function renderizarCliente(doc) {
+    const cliente = doc.data();
+    const element = document.createElement('div');
+    element.className = 'cliente-item';
+    element.innerHTML = `
+        <div class="cliente-header" onclick="toggleDetalhes(this)">
+            <span>${cliente.nome}</span>
+            <i class="fas fa-chevron-down"></i>
+        </div>
+        <div class="cliente-detalhes">
+            <p><i class="fas fa-phone"></i> ${cliente.telefone}</p>
+            <p><i class="fas fa-map-marker-alt"></i> ${cliente.localizacao}</p>
+            <p><i class="fas fa-ruler-combined"></i> ${cliente.tamanhoTerra} hectares</p>
+            <div class="acoes-item">
+                <button onclick="editarCliente('${doc.id}')" class="btn-editar">
+                    <i class="fas fa-edit"></i>
+                </button>
+                <button onclick="excluirCliente('${doc.id}')" class="btn-excluir">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </div>
+        </div>
+    `;
+    return element;
+}
+
+function toggleDetalhes(header) {
+    const detalhes = header.nextElementSibling;
+    detalhes.classList.toggle('ativo');
+    header.querySelector('i').classList.toggle('fa-chevron-up');
+}
+
 async function carregarClientes() {
     try {
-        const snapshot = await db.collection('clientes').get();
-        listaClientes.innerHTML = '';
+        const snapshot = await db.collection('clientes')
+            .orderBy('nome')
+            .get();
         
+        const container = document.getElementById('lista-clientes');
+        container.innerHTML = '';
+        
+        if (snapshot.empty) {
+            container.innerHTML = '<p class="sem-dados">Nenhum cliente cadastrado</p>';
+            return;
+        }
+
         snapshot.forEach(doc => {
-            const cliente = { id: doc.id, ...doc.data() };
-            const element = criarElementoCliente(cliente);
-            listaClientes.appendChild(element);
+            container.appendChild(renderizarCliente(doc));
         });
     } catch (error) {
         console.error('Erro ao carregar clientes:', error);
-        alert('Erro ao carregar clientes');
+        alert('Erro ao carregar clientes: ' + error.message);
     }
 }
 
-function criarElementoCliente(cliente) {
-    const div = document.createElement('div');
-    div.className = 'cliente-item';
-    div.innerHTML = `
-        <h3>${cliente.nome}</h3>
-        <p><i class="fas fa-phone"></i> ${cliente.telefone}</p>
-        <p><i class="fas fa-map-marker-alt"></i> ${cliente.localizacao}</p>
-        <p><i class="fas fa-ruler-combined"></i> ${cliente.tamanhoTerra} hectares</p>
-        <div class="acoes">
-            <button onclick="editarCliente('${cliente.id}')" class="btn-edit">
-                <i class="fas fa-edit"></i>
-            </button>
-            <button onclick="excluirCliente('${cliente.id}')" class="btn-delete">
-                <i class="fas fa-trash"></i>
-            </button>
-        </div>
-    `;
-    return div;
+function filtrarClientes() {
+    const termo = document.getElementById('pesquisaCliente').value.toLowerCase();
+    const clientes = document.querySelectorAll('.cliente-item');
+    
+    clientes.forEach(cliente => {
+        const nome = cliente.querySelector('.cliente-header span').textContent.toLowerCase();
+        const telefone = cliente.querySelector('.cliente-detalhes p').textContent.toLowerCase();
+        
+        if (nome.includes(termo) || telefone.includes(termo)) {
+            cliente.style.display = '';
+        } else {
+            cliente.style.display = 'none';
+        }
+    });
 }
 
 // Funções globais

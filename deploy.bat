@@ -37,30 +37,16 @@ echo.
 echo Verificando alteracoes...
 git status
 
-:: Adiciona todas as alterações
-echo.
-echo Adicionando alteracoes...
+:: Adiciona todas as alterações ao Git
 git add .
 
-:: Cria um commit
-echo.
-echo Criando commit...
-set "data=%date:~0,2%/%date:~3,2%/%date:~6,4% %time:~0,2%:%time:~3,2%"
-git commit -m "Atualizacao: %data%"
+:: Commit com data/hora
+for /f "tokens=2 delims==" %%I in ('wmic os get localdatetime /value') do set datetime=%%I
+set datetime=%datetime:~0,8%-%datetime:~8,6%
+git commit -m "Deploy automatico %datetime%"
 
-:: Envia para o GitHub
-echo.
-echo Enviando para o GitHub...
-echo (Pode demorar alguns segundos)
-git push -u origin main
-if %errorlevel% neq 0 (
-    color 0C
-    echo.
-    echo ERRO: Falha ao enviar para o GitHub!
-    echo Verifique sua conexao e credenciais.
-    pause
-    exit /b
-)
+:: Push para o GitHub
+git push origin main
 
 :: Conclusão
 color 0A

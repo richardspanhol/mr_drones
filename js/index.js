@@ -57,41 +57,48 @@ document.addEventListener('DOMContentLoaded', async () => {
     async function carregarResumoFinanceiro() {
         try {
             console.log('Carregando resumo financeiro...');
+            
+            // Carregar saldo em caixa
+            const docSaldo = await db.collection('financeiro').doc('saldo').get();
+            const saldoEmCaixa = docSaldo.exists ? docSaldo.data().valor : 0;
+            
             const hoje = new Date();
             const primeiroDiaMes = new Date(hoje.getFullYear(), hoje.getMonth(), 1);
-            const primeiroDiaMesStr = primeiroDiaMes.toISOString().split('T')[0];
             
-            // Carregar entradas (serviços realizados)
-            const servicosRef = db.collection('servicos');
-            const snapshotServicos = await servicosRef
-                .where('status', '==', 'realizado')
-                .where('data', '>=', primeiroDiaMesStr)
+            // Carregar serviços do mês
+            const servicosSnapshot = await db.collection('servicos')
+                .where('data', '>=', primeiroDiaMes.toISOString().split('T')[0])
+                .where('data', '<=', hoje.toISOString().split('T')[0])
                 .get();
-
+            
+            // Carregar saídas do mês
+            const saidasSnapshot = await db.collection('saidas')
+                .where('data', '>=', primeiroDiaMes.toISOString().split('T')[0])
+                .where('data', '<=', hoje.toISOString().split('T')[0])
+                .get();
+            
             let totalEntradas = 0;
-            snapshotServicos.forEach(doc => {
+            servicosSnapshot.forEach(doc => {
                 const servico = doc.data();
-                totalEntradas += Number(servico.valor) || 0;
+                totalEntradas += servico.valor;
             });
-
-            // Carregar saídas
-            const saidasRef = db.collection('saidas');
-            const snapshotSaidas = await saidasRef
-                .where('data', '>=', primeiroDiaMesStr)
-                .get();
-
+            
             let totalSaidas = 0;
-            snapshotSaidas.forEach(doc => {
+            saidasSnapshot.forEach(doc => {
                 const saida = doc.data();
-                totalSaidas += Number(saida.valor) || 0;
+                totalSaidas += saida.valor;
             });
-
-            console.log('Totais:', { entradas: totalEntradas, saidas: totalSaidas });
-
+            
+            // Atualizar a interface
+            document.getElementById('saldo-caixa').textContent = saldoEmCaixa.toFixed(2);
             document.getElementById('total-entradas').textContent = totalEntradas.toFixed(2);
             document.getElementById('total-saidas').textContent = totalSaidas.toFixed(2);
+            document.getElementById('qtd-servicos').textContent = servicosSnapshot.size;
+            document.getElementById('qtd-saidas').textContent = saidasSnapshot.size;
+            
         } catch (error) {
             console.error('Erro ao carregar resumo financeiro:', error);
+            alert('Erro ao carregar resumo financeiro: ' + error.message);
         }
     }
 

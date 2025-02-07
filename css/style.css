@@ -279,16 +279,18 @@ nav a:hover, nav a.active {
 }
 
 .login-container {
-    width: 100%;
+    text-align: center;
     max-width: 400px;
-    padding: var(--spacing-unit);
+    margin: 0 auto;
+    padding: 40px 20px;
 }
 
 .login-card {
-    background: white;
-    padding: 2rem;
-    border-radius: 10px;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    background: rgba(255, 255, 255, 0.95);
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(10px);
 }
 
 .login-card h1 {
@@ -375,4 +377,272 @@ nav a:hover, nav a.active {
 
 .status-realizado {
     color: var(--success-color);
+}
+
+.parcelamento-group {
+    display: flex;
+    align-items: center;
+}
+
+.checkbox-label {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    font-size: 0.9em;
+}
+
+.checkbox-label input[type="checkbox"] {
+    margin-right: 5px;
+    transform: scale(0.8);
+}
+
+.checkbox-text {
+    margin-left: 4px;
+}
+
+/* Estilos para lista de clientes */
+.cliente-item {
+    background: #fff;
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 15px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.cliente-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+.cliente-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 1.2em;
+    font-weight: bold;
+    color: var(--primary-color);
+}
+
+.cliente-detalhes {
+    display: none;
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 1px solid #eee;
+}
+
+.cliente-detalhes.ativo {
+    display: block;
+}
+
+.barra-pesquisa {
+    margin-bottom: 20px;
+    padding: 15px;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.barra-pesquisa input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 1em;
+}
+
+/* Footer */
+.footer {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 15px;
+    text-align: center;
+    font-size: 1em;
+    color: rgba(255, 255, 255, 0.8);
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    backdrop-filter: blur(5px);
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.footer p {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    letter-spacing: 1px;
+}
+
+/* Estilos para o resumo financeiro na home */
+.resumo-info {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+    padding: 15px;
+}
+
+.info-item {
+    background: linear-gradient(145deg, #ffffff, #f0f0f0);
+    border-radius: 15px;
+    padding: 20px;
+    text-align: center;
+    box-shadow: 5px 5px 15px rgba(0,0,0,0.1);
+    transition: transform 0.3s ease;
+}
+
+.info-item:hover {
+    transform: translateY(-5px);
+}
+
+.info-item h3 {
+    color: var(--primary-color);
+    margin-bottom: 10px;
+    font-size: 1.2em;
+}
+
+.info-item p {
+    font-size: 1.8em;
+    font-weight: bold;
+    color: #2c3e50;
+    margin: 10px 0;
+}
+
+.info-item small {
+    color: #7f8c8d;
+    display: block;
+    margin-top: 5px;
+}
+
+/* Estilos para a marca RSystem */
+.rsystem-brand {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    font-size: 2.5em;
+    font-weight: 700;
+    color: #ffffff;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 40px;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+    position: relative;
+    padding-bottom: 15px;
+}
+
+.rsystem-brand::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60px;
+    height: 4px;
+    background: linear-gradient(90deg, #ffffff, rgba(255,255,255,0.5));
+    border-radius: 2px;
+}
+
+/* Estilos para relatórios */
+.relatorio-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 25px;
+    padding: 20px;
+    margin-top: 20px;
+}
+
+.relatorio-card {
+    background: linear-gradient(145deg, #ffffff, #f8f9fa);
+    border-radius: 15px;
+    padding: 25px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.relatorio-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 4px;
+    background: linear-gradient(90deg, var(--primary-color), transparent);
+}
+
+.relatorio-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 40px rgba(0,0,0,0.15);
+}
+
+.relatorio-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid rgba(0,0,0,0.1);
+}
+
+.relatorio-header h3 {
+    color: var(--primary-color);
+    font-size: 1.4em;
+    font-weight: 600;
+    margin: 0;
+}
+
+.relatorio-header i {
+    font-size: 1.5em;
+    opacity: 0.9;
+}
+
+.relatorio-valor {
+    font-size: 2.5em;
+    font-weight: bold;
+    margin: 20px 0;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+}
+
+.relatorio-info {
+    color: #666;
+    font-size: 1em;
+}
+
+.relatorio-info p {
+    display: flex;
+    align-items: center;
+    margin: 10px 0;
+}
+
+.relatorio-info i {
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 10px;
+    color: var(--primary-color);
+}
+
+.relatorio-periodo {
+    background: #f8f9fa;
+    padding: 15px;
+    border-radius: 10px;
+    margin-top: 20px;
+    text-align: center;
+    font-size: 1em;
+    color: #666;
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+    .relatorio-container {
+        grid-template-columns: 1fr;
+        padding: 10px;
+    }
+
+    .relatorio-card {
+        padding: 20px;
+    }
+
+    .relatorio-valor {
+        font-size: 2em;
+    }
 }

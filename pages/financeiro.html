@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Financeiro - MR Drones</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="header-content">
+                <button id="menu-toggle" class="menu-toggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <h1>Financeiro</h1>
+                <button onclick="logout()" class="menu-toggle">
+                    <i class="fas fa-sign-out-alt"></i>
+                </button>
+            </div>
+            <nav id="main-nav" class="nav-closed">
+                <!-- O menu será preenchido pelo menu.js -->
+            </nav>
+        </header>
+
+        <main>
+            <div class="card">
+                <h2>Saldo em Caixa</h2>
+                <div class="saldo-info">
+                    <p>Saldo Atual: R$ <span id="saldo-atual">0,00</span></p>
+                    <button onclick="abrirModalAjuste()" class="btn-primary">
+                        <i class="fas fa-plus"></i> Ajustar Saldo
+                    </button>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>Histórico de Ajustes</h2>
+                <div id="lista-ajustes"></div>
+            </div>
+        </main>
+
+        <!-- Modal de Ajuste -->
+        <div id="modal-ajuste" class="modal">
+            <div class="modal-content">
+                <h2>Ajustar Saldo</h2>
+                <form id="form-ajuste">
+                    <div class="form-group">
+                        <label for="tipo">Tipo de Ajuste</label>
+                        <select id="tipo" name="tipo" required>
+                            <option value="entrada">Entrada</option>
+                            <option value="saida">Saída</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="valor">Valor (R$)</label>
+                        <input type="number" id="valor" name="valor" step="0.01" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="descricao">Descrição</label>
+                        <input type="text" id="descricao" name="descricao" required>
+                    </div>
+                    <div class="form-buttons">
+                        <button type="button" onclick="fecharModal()" class="btn-secondary">Cancelar</button>
+                        <button type="submit" class="btn-primary">Salvar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script src="../js/auth.js"></script>
+    <script src="../js/financeiro.js"></script>
+    <script src="../js/menu.js"></script>
+</body>
+</html> 

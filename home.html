@@ -20,12 +20,7 @@
                 </button>
             </div>
             <nav id="main-nav" class="nav-closed">
-                <a href="home.html" class="active"><i class="fas fa-home"></i> Início</a>
-                <a href="pages/clientes.html"><i class="fas fa-users"></i> Clientes</a>
-                <a href="pages/servicos.html"><i class="fas fa-drone"></i> Serviços</a>
-                <a href="pages/relatorios.html"><i class="fas fa-chart-bar"></i> Relatórios</a>
-                <a href="pages/saidas.html"><i class="fas fa-money-bill-wave"></i> Saídas</a>
-                <a href="pages/calculadora.html"><i class="fas fa-calculator"></i> Calculadora</a>
+                <!-- O menu será preenchido pelo menu.js -->
             </nav>
         </header>
 
@@ -33,14 +28,20 @@
             <section class="dashboard">
                 <div class="card">
                     <h2>Resumo Financeiro</h2>
-                    <div class="financeiro">
-                        <div class="entrada">
-                            <h3>Entradas</h3>
-                            <p>R$ <span id="total-entradas">0,00</span></p>
+                    <div class="resumo-info">
+                        <div class="info-item">
+                            <h3>Saldo em Caixa</h3>
+                            <p>R$ <span id="saldo-caixa">0,00</span></p>
                         </div>
-                        <div class="saida">
-                            <h3>Saídas</h3>
+                        <div class="info-item">
+                            <h3>Total de Entradas</h3>
+                            <p>R$ <span id="total-entradas">0,00</span></p>
+                            <small>Serviços Realizados: <span id="qtd-servicos">0</span></small>
+                        </div>
+                        <div class="info-item">
+                            <h3>Total de Saídas</h3>
                             <p>R$ <span id="total-saidas">0,00</span></p>
+                            <small>Despesas: <span id="qtd-saidas">0</span></small>
                         </div>
                     </div>
                 </div>

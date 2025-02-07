@@ -4,6 +4,15 @@ document.addEventListener('DOMContentLoaded', () => {
     const menuToggle = document.getElementById('menu-toggle');
     const mainNav = document.getElementById('main-nav');
     
+    // Verificar se estamos na home ou em uma subpágina
+    const isHome = window.location.pathname.endsWith('home.html') || 
+                  window.location.pathname.endsWith('index.html') ||
+                  window.location.pathname.endsWith('mr_drones/');
+    
+    // Ajustar os caminhos baseado na localização
+    const prefix = isHome ? 'pages/' : '';
+    const homePrefix = isHome ? '' : '../';
+
     console.log('Elementos encontrados:', {
         menuToggle: !!menuToggle,
         mainNav: !!mainNav
@@ -49,4 +58,15 @@ document.addEventListener('DOMContentLoaded', () => {
     // Garantir que o menu começa fechado
     closeMenu();
     console.log('Inicialização do menu concluída');
+
+    // Preencher o menu com os caminhos corretos
+    mainNav.innerHTML = `
+        <a href="${homePrefix}home.html"><i class="fas fa-home"></i> Início</a>
+        <a href="${prefix}clientes.html"><i class="fas fa-users"></i> Clientes</a>
+        <a href="${prefix}servicos.html"><i class="fas fa-drone"></i> Serviços</a>
+        <a href="${prefix}relatorios.html"><i class="fas fa-chart-bar"></i> Relatórios</a>
+        <a href="${prefix}saidas.html"><i class="fas fa-money-bill-wave"></i> Saídas</a>
+        <a href="${prefix}financeiro.html"><i class="fas fa-wallet"></i> Financeiro</a>
+        <a href="${prefix}calculadora.html"><i class="fas fa-calculator"></i> Calculadora</a>
+    `;
 }); 
