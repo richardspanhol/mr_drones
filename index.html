@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MR Drones</title>
+    <link rel="stylesheet" href="css/style.css">
+    <!-- Font Awesome para ícones -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="header-content">
+                <button id="menu-toggle" class="menu-toggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <h1>MR Drones</h1>
+            </div>
+            <nav id="main-nav" class="nav-closed">
+                <a href="index.html" class="active"><i class="fas fa-home"></i> Início</a>
+                <a href="pages/clientes.html"><i class="fas fa-users"></i> Clientes</a>
+                <a href="pages/servicos.html"><i class="fas fa-drone"></i> Serviços</a>
+                <a href="pages/relatorios.html"><i class="fas fa-chart-bar"></i> Relatórios</a>
+                <a href="pages/calculadora.html"><i class="fas fa-calculator"></i> Calculadora</a>
+            </nav>
+        </header>
+
+        <main>
+            <section class="dashboard">
+                <div class="card">
+                    <h2>Resumo Financeiro</h2>
+                    <div class="financeiro">
+                        <div class="entrada">
+                            <h3>Entradas</h3>
+                            <p>R$ <span id="total-entradas">0,00</span></p>
+                        </div>
+                        <div class="saida">
+                            <h3>Saídas</h3>
+                            <p>R$ <span id="total-saidas">0,00</span></p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h2>Próximos Serviços</h2>
+                    <div id="proximos-servicos" class="lista-servicos">
+                        <!-- Será preenchido via JavaScript -->
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+    <script src="js/index.js"></script>
+    <script src="js/menu.js"></script>
+</body>
+</html>

@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Saídas - MR Drones</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Saídas</h1>
+            <nav>
+                <a href="../index.html"><i class="fas fa-home"></i> Início</a>
+                <a href="clientes.html"><i class="fas fa-users"></i> Clientes</a>
+                <a href="servicos.html"><i class="fas fa-drone"></i> Serviços</a>
+                <a href="saidas.html" class="active"><i class="fas fa-money-bill-wave"></i> Saídas</a>
+                <a href="relatorios.html"><i class="fas fa-chart-bar"></i> Relatórios</a>
+                <a href="calculadora.html"><i class="fas fa-calculator"></i> Calculadora</a>
+            </nav>
+        </header>
+
+        <main>
+            <div class="card">
+                <button id="nova-saida" class="btn-primary">
+                    <i class="fas fa-plus"></i> Nova Saída
+                </button>
+                
+                <div class="lista-saidas" id="lista-saidas">
+                    <!-- Será preenchido via JavaScript -->
+                </div>
+            </div>
+        </main>
+
+        <!-- Modal de Cadastro/Edição -->
+        <div id="modal-saida" class="modal">
+            <div class="modal-content">
+                <h2>Cadastrar Saída</h2>
+                <form id="form-saida">
+                    <div class="form-group">
+                        <label for="tipo">Tipo de Saída</label>
+                        <select id="tipo" required>
+                            <option value="">Selecione o tipo</option>
+                            <option value="combustivel">Combustível</option>
+                            <option value="pecas">Peças</option>
+                            <option value="manutencao">Manutenção</option>
+                            <option value="aquisicao">Nova Aquisição</option>
+                            <option value="outros">Outros</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="descricao">Descrição</label>
+                        <textarea id="descricao" rows="3" required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="local">Local</label>
+                        <input type="text" id="local" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="data">Data</label>
+                        <input type="date" id="data" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="valor">Valor (R$)</label>
+                        <input type="number" id="valor" step="0.01" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="formaPagamento">Forma de Pagamento</label>
+                        <select id="formaPagamento" required>
+                            <option value="avista">À Vista</option>
+                            <option value="prazo">A Prazo</option>
+                            <option value="cartao">Cartão</option>
+                        </select>
+                    </div>
+                    <div class="form-buttons">
+                        <button type="submit" class="btn-primary">Salvar</button>
+                        <button type="button" class="btn-secondary" onclick="fecharModal()">Cancelar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <!-- Firebase Scripts -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+    <script src="../js/saidas.js"></script>
+</body>
+</html> 

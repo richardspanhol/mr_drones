@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Relatórios - MR Drones</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="header-content">
+                <button id="menu-toggle" class="menu-toggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <h1>Relatórios</h1>
+            </div>
+            <nav id="main-nav" class="nav-closed">
+                <a href="../index.html"><i class="fas fa-home"></i> Início</a>
+                <a href="clientes.html"><i class="fas fa-users"></i> Clientes</a>
+                <a href="servicos.html"><i class="fas fa-drone"></i> Serviços</a>
+                <a href="relatorios.html" class="active"><i class="fas fa-chart-bar"></i> Relatórios</a>
+                <a href="calculadora.html"><i class="fas fa-calculator"></i> Calculadora</a>
+            </nav>
+        </header>
+
+        <main>
+            <div class="card">
+                <h2>Filtros</h2>
+                <div class="form-group">
+                    <label for="periodo">Período</label>
+                    <select id="periodo">
+                        <option value="7">Últimos 7 dias</option>
+                        <option value="30" selected>Últimos 30 dias</option>
+                        <option value="90">Últimos 90 dias</option>
+                        <option value="365">Último ano</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>Resumo Financeiro</h2>
+                <div class="relatorio-financeiro">
+                    <div class="total-entradas">
+                        <h3>Total de Entradas</h3>
+                        <p>R$ <span id="total-entradas">0,00</span></p>
+                        <small>Serviços Realizados: <span id="qtd-servicos">0</span></small>
+                    </div>
+                    <div class="total-saidas">
+                        <h3>Total de Saídas</h3>
+                        <p>R$ <span id="total-saidas">0,00</span></p>
+                        <small>Despesas: <span id="qtd-saidas">0</span></small>
+                    </div>
+                    <div class="lucro">
+                        <h3>Lucro</h3>
+                        <p>R$ <span id="lucro">0,00</span></p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>Serviços Realizados</h2>
+                <div id="lista-servicos-realizados" class="lista-itens">
+                    <!-- Será preenchido via JavaScript -->
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>Saídas do Período</h2>
+                <div id="lista-saidas" class="lista-itens">
+                    <!-- Será preenchido via JavaScript -->
+                </div>
+            </div>
+        </main>
+    </div>
+    <!-- Firebase Scripts -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+    <script src="../js/relatorios.js"></script>
+    <script src="../js/menu.js"></script>
+</body>
+</html> 

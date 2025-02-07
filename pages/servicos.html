@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Serviços - MR Drones</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="header-content">
+                <button id="menu-toggle" class="menu-toggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <h1>Serviços</h1>
+            </div>
+            <nav id="main-nav" class="nav-closed">
+                <a href="../index.html"><i class="fas fa-home"></i> Início</a>
+                <a href="clientes.html"><i class="fas fa-users"></i> Clientes</a>
+                <a href="servicos.html" class="active"><i class="fas fa-drone"></i> Serviços</a>
+                <a href="relatorios.html"><i class="fas fa-chart-bar"></i> Relatórios</a>
+                <a href="calculadora.html"><i class="fas fa-calculator"></i> Calculadora</a>
+            </nav>
+        </header>
+
+        <main>
+            <div class="card">
+                <button id="novo-servico" class="btn-primary">
+                    <i class="fas fa-plus"></i> Novo Serviço
+                </button>
+                
+                <div class="lista-servicos" id="lista-servicos">
+                    <!-- Será preenchido via JavaScript -->
+                </div>
+            </div>
+        </main>
+
+        <!-- Modal de Cadastro/Edição -->
+        <div id="modal-servico" class="modal">
+            <div class="modal-content">
+                <h2>Cadastrar Serviço</h2>
+                <form id="form-servico">
+                    <div class="form-group">
+                        <label for="cliente">Cliente</label>
+                        <select id="cliente" required></select>
+                        <button type="button" class="btn-secondary" onclick="window.location.href='clientes.html'">
+                            <i class="fas fa-plus"></i> Novo Cliente
+                        </button>
+                    </div>
+                    <div class="form-group">
+                        <label for="tipo">Tipo de Serviço</label>
+                        <select id="tipo" required onchange="calcularValorServico()">
+                            <option value="">Selecione o serviço</option>
+                            <option value="pulverizacao">Pulverização</option>
+                            <option value="mapeamento">Mapeamento</option>
+                            <option value="plantacao">Plantação</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="tamanhoArea">Tamanho da Área (hectares)</label>
+                        <input type="number" id="tamanhoArea" min="0" step="0.1" required onchange="calcularValorServico()">
+                    </div>
+                    <div class="form-group">
+                        <label for="formaPagamento">Forma de Pagamento</label>
+                        <select id="formaPagamento">
+                            <option value="">Selecione a forma de pagamento</option>
+                            <option value="avista">À Vista</option>
+                            <option value="prazo">A Prazo</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="valor">Valor do Serviço (R$)</label>
+                        <input type="number" id="valor" step="0.01" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="data">Data do Serviço</label>
+                        <input type="date" id="data" required>
+                    </div>
+                    <div class="form-buttons">
+                        <button type="submit" class="btn-primary">Salvar</button>
+                        <button type="button" class="btn-secondary" onclick="fecharModal()">Cancelar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+    <script src="../js/servicos.js"></script>
+    <script src="../js/menu.js"></script>
+</body>
+</html> 

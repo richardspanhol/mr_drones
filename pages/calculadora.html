@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora - MR Drones</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="header-content">
+                <button id="menu-toggle" class="menu-toggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <h1>Calculadora</h1>
+            </div>
+            <nav id="main-nav" class="nav-closed">
+                <a href="../index.html"><i class="fas fa-home"></i> Início</a>
+                <a href="clientes.html"><i class="fas fa-users"></i> Clientes</a>
+                <a href="servicos.html"><i class="fas fa-drone"></i> Serviços</a>
+                <a href="relatorios.html"><i class="fas fa-chart-bar"></i> Relatórios</a>
+                <a href="calculadora.html" class="active"><i class="fas fa-calculator"></i> Calculadora</a>
+            </nav>
+        </header>
+
+        <main>
+            <div class="card">
+                <form id="form-calculadora">
+                    <div class="form-group">
+                        <label for="tipo-servico">Tipo de Serviço</label>
+                        <select id="tipo-servico" required>
+                            <option value="">Selecione o serviço</option>
+                            <option value="pulverizacao">Pulverização</option>
+                            <option value="mapeamento">Mapeamento</option>
+                            <option value="plantacao">Plantação</option>
+                            <option value="alqueires">Alqueires</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="tamanho">Tamanho (Hectares)</label>
+                        <input type="number" id="tamanho" min="0" step="0.1" required>
+                    </div>
+                    <button type="submit" class="btn-primary">Calcular</button>
+                </form>
+
+                <div id="resultado" style="display: none;">
+                    <h3>Valor Estimado</h3>
+                    <div class="valor-total">
+                        <p>R$ <span id="valor-total">0,00</span></p>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    <script src="../js/calculadora.js"></script>
+    <script src="../js/menu.js"></script>
+</body>
+</html> 
