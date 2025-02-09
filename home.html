@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MR Drones</title>
+    <title>Home - MR Drones</title>
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
@@ -33,23 +33,33 @@
                             <h3>Saldo em Caixa</h3>
                             <p>R$ <span id="saldo-caixa">0,00</span></p>
                         </div>
-                        <div class="info-item">
+                        <div class="info-item entradas">
                             <h3>Total de Entradas</h3>
                             <p>R$ <span id="total-entradas">0,00</span></p>
                             <small>Serviços Realizados: <span id="qtd-servicos">0</span></small>
                         </div>
-                        <div class="info-item">
+                        <div class="info-item saidas">
                             <h3>Total de Saídas</h3>
                             <p>R$ <span id="total-saidas">0,00</span></p>
                             <small>Despesas: <span id="qtd-saidas">0</span></small>
                         </div>
+                        <div class="info-item previstos">
+                            <h3>Valores Previstos</h3>
+                            <p>R$ <span id="total-previstos">0,00</span></p>
+                            <small>Pagamentos Pendentes: <span id="qtd-previstos">0</span></small>
+                        </div>
                     </div>
                 </div>
 
-                <div class="card">
-                    <h2>Próximos Serviços</h2>
-                    <div id="proximos-servicos" class="lista-servicos">
-                        <!-- Será preenchido via JavaScript -->
+                <div class="card expansivel">
+                    <div class="card-header" onclick="toggleExpansivel(this)">
+                        <h2>Próximos Serviços</h2>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="card-content" style="display: none;">
+                        <div id="proximos-servicos" class="lista-servicos">
+                            <!-- Será preenchido via JavaScript -->
+                        </div>
                     </div>
                 </div>
             </section>
@@ -59,7 +69,8 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
     <script src="js/auth.js"></script>
-    <script src="js/index.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/home.js"></script>
     <script src="js/menu.js"></script>
 </body>
 </html> 

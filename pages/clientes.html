@@ -53,21 +53,22 @@
                 <h2>Cadastrar Cliente</h2>
                 <form id="form-cliente">
                     <div class="form-group">
-                        <label for="nome">Nome</label>
+                        <label for="nome">Nome *</label>
                         <input type="text" id="nome" required>
                     </div>
                     <div class="form-group">
-                        <label for="telefone">Telefone</label>
-                        <input type="tel" id="telefone" maxlength="15" required onkeyup="mascaraTelefone(this)">
+                        <label for="telefone">Telefone *</label>
+                        <input type="text" id="telefone" onkeyup="mascaraTelefone(this)" required>
                     </div>
                     <div class="form-group">
-                        <label for="localizacao">Localização</label>
+                        <label for="localizacao">Endereço *</label>
                         <input type="text" id="localizacao" required>
                     </div>
                     <div class="form-group">
                         <label for="tamanhoTerra">Tamanho da Terra (hectares)</label>
-                        <input type="number" id="tamanhoTerra" min="0" step="0.1" required>
+                        <input type="number" id="tamanhoTerra" step="0.01">
                     </div>
+                    <small>* Campos obrigatórios</small>
                     <div class="form-buttons">
                         <button type="button" onclick="salvarCliente()" class="btn-primary">Salvar</button>
                         <button type="button" class="btn-secondary" onclick="fecharModal()">Cancelar</button>
@@ -81,6 +82,7 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
     <script src="../js/auth.js"></script>
+    <script src="../js/utils.js"></script>
     <script src="../js/clientes.js"></script>
     <script src="../js/menu.js"></script>
 </body>

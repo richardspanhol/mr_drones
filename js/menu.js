@@ -63,9 +63,8 @@ document.addEventListener('DOMContentLoaded', () => {
     mainNav.innerHTML = `
         <a href="${homePrefix}home.html"><i class="fas fa-home"></i> Início</a>
         <a href="${prefix}clientes.html"><i class="fas fa-users"></i> Clientes</a>
-        <a href="${prefix}servicos.html"><i class="fas fa-drone"></i> Serviços</a>
+        <a href="${prefix}servicos.html"><i class="fas fa-helicopter"></i> Serviços</a>
         <a href="${prefix}relatorios.html"><i class="fas fa-chart-bar"></i> Relatórios</a>
-        <a href="${prefix}saidas.html"><i class="fas fa-money-bill-wave"></i> Saídas</a>
         <a href="${prefix}financeiro.html"><i class="fas fa-wallet"></i> Financeiro</a>
         <a href="${prefix}calculadora.html"><i class="fas fa-calculator"></i> Calculadora</a>
     `;

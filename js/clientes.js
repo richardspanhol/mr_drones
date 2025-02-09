@@ -70,20 +70,36 @@ function toggleDetalhes(header) {
 
 async function carregarClientes() {
     try {
-        const snapshot = await db.collection('clientes')
-            .orderBy('nome')
-            .get();
-        
+        const snapshot = await db.collection('clientes').orderBy('nome').get();
         const container = document.getElementById('lista-clientes');
         container.innerHTML = '';
-        
-        if (snapshot.empty) {
-            container.innerHTML = '<p class="sem-dados">Nenhum cliente cadastrado</p>';
-            return;
-        }
 
         snapshot.forEach(doc => {
-            container.appendChild(renderizarCliente(doc));
+            const cliente = doc.data();
+            const div = document.createElement('div');
+            div.className = 'cliente-item card expansivel';
+            div.innerHTML = `
+                <div class="card-header" onclick="toggleExpansivel(this)">
+                    <h3>${cliente.nome}</h3>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="card-content" style="display: none;">
+                    <div class="cliente-info">
+                        <p><i class="fas fa-phone"></i> ${cliente.telefone}</p>
+                        <p><i class="fas fa-map-marker-alt"></i> ${cliente.endereco}</p>
+                        ${cliente.tamanhoTerra ? `<p><i class="fas fa-ruler-combined"></i> ${cliente.tamanhoTerra} hectares</p>` : ''}
+                    </div>
+                    <div class="cliente-acoes">
+                        <button onclick="editarCliente('${doc.id}')" class="btn-editar">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button onclick="excluirCliente('${doc.id}')" class="btn-excluir">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </div>
+            `;
+            container.appendChild(div);
         });
     } catch (error) {
         console.error('Erro ao carregar clientes:', error);
@@ -108,16 +124,27 @@ function filtrarClientes() {
 }
 
 // Funções globais
-window.editarCliente = async (id) => {
+window.editarCliente = async function(id) {
     try {
         const doc = await db.collection('clientes').doc(id).get();
         if (doc.exists) {
-            const cliente = { id: doc.id, ...doc.data() };
-            abrirModal(cliente);
+            const cliente = doc.data();
+            const form = document.getElementById('form-cliente');
+            
+            // Preencher o formulário com os dados do cliente
+            form.dataset.id = id;
+            document.getElementById('nome').value = cliente.nome || '';
+            document.getElementById('telefone').value = cliente.telefone || '';
+            document.getElementById('localizacao').value = cliente.endereco || '';
+            document.getElementById('tamanhoTerra').value = cliente.tamanhoTerra || '';
+            
+            // Abrir o modal
+            const modal = document.getElementById('modal-cliente');
+            modal.style.display = 'block';
         }
     } catch (error) {
-        console.error('Erro ao carregar cliente:', error);
-        alert('Erro ao carregar cliente');
+        console.error('Erro ao editar cliente:', error);
+        alert('Erro ao editar cliente: ' + error.message);
     }
 };
 
@@ -153,46 +180,65 @@ window.excluirCliente = excluirCliente;
 window.mascaraTelefone = mascaraTelefone;
 window.salvarCliente = async function() {
     try {
-        console.log('Iniciando salvamento do cliente');
-        
-        const nome = document.getElementById('nome').value;
-        const telefone = document.getElementById('telefone').value;
-        const localizacao = document.getElementById('localizacao').value;
-        const tamanhoTerra = parseFloat(document.getElementById('tamanhoTerra').value);
+        const form = document.getElementById('form-cliente');
+        const cliente = {
+            nome: document.getElementById('nome').value,
+            telefone: document.getElementById('telefone').value,
+            endereco: document.getElementById('localizacao').value,
+            dataCadastro: new Date().toISOString()
+        };
 
-        if (!nome || !telefone || !localizacao || !tamanhoTerra) {
-            alert('Por favor, preencha todos os campos');
+        // Adicionar tamanhoTerra apenas se for preenchido
+        const tamanhoTerra = document.getElementById('tamanhoTerra').value;
+        if (tamanhoTerra) {
+            cliente.tamanhoTerra = parseFloat(tamanhoTerra);
+        }
+
+        if (!cliente.nome || !cliente.telefone || !cliente.endereco) {
+            alert('Por favor, preencha os campos obrigatórios: Nome, Telefone e Endereço');
             return;
         }
 
-        const cliente = {
-            nome,
-            telefone,
-            localizacao,
-            tamanhoTerra,
-            dataCadastro: firebase.firestore.Timestamp.now()
-        };
-
-        console.log('Dados do cliente:', cliente);
-
-        const form = document.getElementById('form-cliente');
         if (form.dataset.id) {
-            await db.collection('clientes').doc(form.dataset.id).set(cliente);
+            await db.collection('clientes').doc(form.dataset.id).update(cliente);
         } else {
             await db.collection('clientes').add(cliente);
         }
 
-        console.log('Cliente salvo com sucesso');
         fecharModal();
-        await carregarClientes();
+        carregarClientes();
     } catch (error) {
-        console.error('Erro ao salvar:', error);
+        console.error('Erro ao salvar cliente:', error);
         alert('Erro ao salvar cliente: ' + error.message);
     }
 };
 
 // Inicialização
 document.addEventListener('DOMContentLoaded', () => {
-    console.log('DOM carregado em clientes.js');
+    if (!window.db) {
+        console.error('Firebase não inicializado');
+        return;
+    }
+
+    // Funções do modal
+    window.abrirModal = function() {
+        const modal = document.getElementById('modal-cliente');
+        const form = document.getElementById('form-cliente');
+        form.reset();
+        delete form.dataset.id;
+        modal.style.display = 'block';
+    };
+
+    window.fecharModal = function() {
+        const modal = document.getElementById('modal-cliente');
+        modal.style.display = 'none';
+    };
+
+    // Adicionar listener ao botão novo cliente
+    if (btnNovoCliente) {
+        btnNovoCliente.addEventListener('click', window.abrirModal);
+    }
+
+    // Carregar clientes inicialmente
     carregarClientes();
 });

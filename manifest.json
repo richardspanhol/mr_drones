@@ -2,19 +2,19 @@
   "name": "MR Drones",
   "short_name": "MR Drones",
   "description": "Sistema de Gestão MR Drones",
-  "start_url": "/index.html",
+  "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#2ecc71",
   "icons": [
     {
-      "src": "images/icon-192x192.png",
+      "src": "./images/icon-192x192.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any maskable"
     },
     {
-      "src": "images/icon-512x512.png",
+      "src": "./images/icon-512x512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"
