@@ -122,7 +122,7 @@ document.addEventListener('DOMContentLoaded', () => {
             // Carregar serviços realizados
             let servicosQuery = db.collection('servicos')
                 .where('status', '==', 'realizado')
-                .orderBy('dataExecucao', 'desc'); // Sempre ordenar de forma decrescente
+                .orderBy('data');
 
             const servicosSnapshot = await servicosQuery.get();
 
@@ -132,13 +132,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 servicosSnapshot.docs
                     .filter(doc => {
                         const servico = doc.data();
-                        const dataExec = servico.dataExecucao;
+                        const dataServico = new Date(servico.data);
                         if (isFuturo) {
-                            return dataExec >= dataInicio;
+                            return dataServico >= dataInicio;
                         } else if (periodo === 'todos') {
                             return true;
                         } else {
-                            return dataExec >= dataInicio && dataExec <= dataFim;
+                            return dataServico >= dataInicio && dataServico <= dataFim;
                         }
                     })
                     .map(doc => {
@@ -146,15 +146,27 @@ document.addEventListener('DOMContentLoaded', () => {
                         return `
                             <div class="servico-item card expansivel">
                                 <div class="card-header" onclick="MRDrones.toggleExpansivel(this)">
-                                    <h3>${servico.tipo} - ${servico.clienteNome}</h3>
+                                    <div class="header-content">
+                                        <h3>${servico.tipo} - ${servico.clienteNome}</h3>
+                                        <span>R$ ${formatarMoeda(servico.valor)}</span>
+                                    </div>
                                     <i class="fas fa-chevron-down"></i>
                                 </div>
                                 <div class="card-content" style="display: none;">
                                     <div class="servico-info">
-                                        <p><i class="fas fa-calendar-check"></i> Executado em: ${formatarData(servico.dataExecucao)}</p>
+                                        <p><i class="fas fa-calendar"></i> Data: ${formatarData(servico.data)}</p>
+                                        ${servico.dataExecucao ? 
+                                            `<p><i class="fas fa-calendar-check"></i> Executado em: ${formatarData(servico.dataExecucao)}</p>` 
+                                            : ''}
                                         <p><i class="fas fa-ruler"></i> Área: ${servico.tamanhoArea} hectares</p>
                                         <p><i class="fas fa-money-bill-wave"></i> Valor: R$ ${formatarMoeda(servico.valor)}</p>
                                         <p><i class="fas fa-credit-card"></i> Forma de Pagamento: ${servico.formaPagamento}</p>
+                                        ${servico.pagamento ? `
+                                            <p><i class="fas fa-info-circle"></i> Status do Pagamento: ${servico.pagamento.status}</p>
+                                            ${servico.pagamento.valorPago ? 
+                                                `<p><i class="fas fa-money-bill-wave"></i> Valor Pago: R$ ${formatarMoeda(servico.pagamento.valorPago)}</p>` 
+                                                : ''}
+                                        ` : ''}
                                     </div>
                                 </div>
                             </div>
@@ -164,7 +176,7 @@ document.addEventListener('DOMContentLoaded', () => {
             // Carregar saídas
             let saidasQuery = db.collection('movimentacoes')
                 .where('tipo', '==', 'saida')
-                .orderBy('data', 'desc'); // Sempre ordenar de forma decrescente
+                .orderBy('data', 'desc');
 
             const saidasSnapshot = await saidasQuery.get();
 
@@ -174,7 +186,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 saidasSnapshot.docs
                     .filter(doc => {
                         const saida = doc.data();
-                        const dataSaida = saida.data;
+                        const dataSaida = new Date(saida.data);
                         if (isFuturo) {
                             return dataSaida >= dataInicio;
                         } else if (periodo === 'todos') {
@@ -188,7 +200,10 @@ document.addEventListener('DOMContentLoaded', () => {
                         return `
                             <div class="servico-item card expansivel">
                                 <div class="card-header" onclick="MRDrones.toggleExpansivel(this)">
-                                    <h3>${saida.categoria} - ${saida.descricao}</h3>
+                                    <div class="header-content">
+                                        <h3>${saida.categoria} - ${saida.descricao}</h3>
+                                        <span>R$ ${formatarMoeda(saida.valor)}</span>
+                                    </div>
                                     <i class="fas fa-chevron-down"></i>
                                 </div>
                                 <div class="card-content" style="display: none;">
@@ -196,6 +211,9 @@ document.addEventListener('DOMContentLoaded', () => {
                                         <p><i class="fas fa-calendar"></i> ${formatarData(saida.data)}</p>
                                         <p><i class="fas fa-money-bill-wave"></i> R$ ${formatarMoeda(saida.valor)}</p>
                                         <p><i class="fas fa-credit-card"></i> ${saida.formaPagamento}</p>
+                                        ${saida.parcelado ? `
+                                            <p><i class="fas fa-clock"></i> Parcela ${saida.numParcela}/${saida.totalParcelas}</p>
+                                        ` : ''}
                                     </div>
                                 </div>
                             </div>
@@ -221,4 +239,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Inicializar
     carregarRelatorios();
+
+    // Adicionar função de toggle no escopo global
+    window.toggleExpansivel = function(header) {
+        const content = header.nextElementSibling;
+        const icon = header.querySelector('i.fas');
+        
+        if (content && icon) {
+            const isHidden = content.style.display === 'none' || !content.style.display;
+            content.style.display = isHidden ? 'block' : 'none';
+            icon.classList.toggle('fa-chevron-down', !isHidden);
+            icon.classList.toggle('fa-chevron-up', isHidden);
+        }
+    };
 }); 
