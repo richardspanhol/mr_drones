@@ -1,4 +1,4 @@
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
     // Verificar se o Firebase está inicializado
     if (!window.db) {
         console.error('Firebase não inicializado');
@@ -14,85 +14,106 @@ document.addEventListener('DOMContentLoaded', () => {
         }).format(valor);
     }
 
-    // Função para carregar o resumo na página inicial
-    async function carregarResumoHome() {
+    async function carregarResumoFinanceiro() {
         try {
-            // Carregar saldo
-            const saldoDoc = await db.collection('financeiro').doc('saldo').get();
-            let saldoAtual = 0;
-            
-            if (saldoDoc.exists) {
-                saldoAtual = typeof saldoDoc.data().valor === 'number' ? 
-                    saldoDoc.data().valor : 
-                    parseFloat(saldoDoc.data().valor) || 0;
+            const periodo = document.getElementById('periodo').value;
+            const hoje = new Date();
+            let dataInicio, dataFim;
+
+            // Definir período de datas baseado na seleção
+            switch (periodo) {
+                case 'mes-atual':
+                    dataInicio = new Date(hoje.getFullYear(), hoje.getMonth(), 1);
+                    dataFim = new Date(hoje.getFullYear(), hoje.getMonth() + 1, 0);
+                    break;
+                case '30':
+                    dataInicio = new Date(hoje);
+                    dataInicio.setDate(hoje.getDate() - 30);
+                    dataFim = new Date(hoje);
+                    break;
+                case '60':
+                    dataInicio = new Date(hoje);
+                    dataInicio.setDate(hoje.getDate() - 60);
+                    dataFim = new Date(hoje);
+                    break;
+                case '90':
+                    dataInicio = new Date(hoje);
+                    dataInicio.setDate(hoje.getDate() - 90);
+                    dataFim = new Date(hoje);
+                    break;
+                case '365':
+                    dataInicio = new Date(hoje);
+                    dataInicio.setDate(hoje.getDate() - 365);
+                    dataFim = new Date(hoje);
+                    break;
+                case 'proximo-mes':
+                    dataInicio = new Date(hoje.getFullYear(), hoje.getMonth() + 1, 1);
+                    dataFim = new Date(hoje.getFullYear(), hoje.getMonth() + 2, 0);
+                    break;
+                case 'futuros':
+                    dataInicio = new Date(hoje);
+                    dataFim = new Date(2099, 11, 31);
+                    break;
+                case 'todos':
+                    dataInicio = new Date(2000, 0, 1);
+                    dataFim = new Date(2099, 11, 31);
+                    break;
             }
 
-            document.getElementById('saldo-caixa').textContent = formatarMoeda(saldoAtual);
+            // Formatar datas para string (YYYY-MM-DD)
+            const dataInicioStr = dataInicio.toISOString().split('T')[0];
+            const dataFimStr = dataFim.toISOString().split('T')[0];
 
-            const hoje = new Date();
-            const inicioMes = new Date(hoje.getFullYear(), hoje.getMonth(), 1);
-            const dataInicio = inicioMes.toISOString().split('T')[0];
-            
-            // Buscar todas as movimentações do mês atual
-            const movimentacoesSnapshot = await db.collection('movimentacoes')
-                .orderBy('data')
-                .startAt(dataInicio)
+            // Carregar saldo atual
+            const saldoDoc = await db.collection('financeiro').doc('saldo').get();
+            const saldoAtual = saldoDoc.exists ? saldoDoc.data().valor : 0;
+
+            // Buscar entradas do período
+            const entradasSnapshot = await db.collection('movimentacoes')
+                .where('tipo', '==', 'entrada')
+                .where('data', '>=', dataInicioStr)
+                .where('data', '<=', dataFimStr)
                 .get();
-                
+
             let totalEntradas = 0;
-            let totalSaidas = 0;
             let numServicos = 0;
-            let numDespesas = 0;
-            
-            movimentacoesSnapshot.forEach(doc => {
-                const mov = doc.data();
-                if (mov.tipo === 'entrada') {
-                    totalEntradas += parseFloat(mov.valor) || 0;
-                    if (mov.categoria === 'servico') numServicos++;
-                } else if (mov.tipo === 'saida') {
-                    totalSaidas += parseFloat(mov.valor) || 0;
-                    numDespesas++;
-                }
+            entradasSnapshot.forEach(doc => {
+                const entrada = doc.data();
+                totalEntradas += parseFloat(entrada.valor) || 0;
+                if (entrada.categoria === 'servico') numServicos++;
             });
-            
-            // Carregar valores previstos (pagamentos pendentes)
-            const servicosSnapshot = await db.collection('servicos')
-                .where('status', '==', 'realizado')
+
+            // Buscar saídas do período
+            const saidasSnapshot = await db.collection('movimentacoes')
+                .where('tipo', '==', 'saida')
+                .where('data', '>=', dataInicioStr)
+                .where('data', '<=', dataFimStr)
                 .get();
 
-            let totalPrevistos = 0;
-            let qtdPrevistos = 0;
-
-            servicosSnapshot.forEach(doc => {
-                const servico = doc.data();
-                if (servico.pagamento && 
-                    (servico.pagamento.status === 'prazo' || servico.pagamento.status === 'parcial')) {
-                    
-                    if (servico.pagamento.status === 'prazo') {
-                        totalPrevistos += parseFloat(servico.valor) || 0;
-                    } else if (servico.pagamento.status === 'parcial') {
-                        // Se for pagamento parcial, adiciona apenas o valor restante
-                        const valorPago = parseFloat(servico.pagamento.valorPago) || 0;
-                        const valorTotal = parseFloat(servico.valor) || 0;
-                        totalPrevistos += (valorTotal - valorPago);
-                    }
-                    qtdPrevistos++;
-                }
+            let totalSaidas = 0;
+            let numDespesas = 0;
+            saidasSnapshot.forEach(doc => {
+                const saida = doc.data();
+                totalSaidas += parseFloat(saida.valor) || 0;
+                numDespesas++;
             });
 
-            // Atualizar valores na tela
+            // Buscar valores previstos (pagamentos pendentes de serviços)
+            const { totalPrevistos, numPendentes } = await calcularValoresPrevistos();
+
+            // Atualizar interface
+            document.getElementById('saldo-caixa').textContent = formatarMoeda(saldoAtual);
             document.getElementById('total-entradas').textContent = formatarMoeda(totalEntradas);
             document.getElementById('total-saidas').textContent = formatarMoeda(totalSaidas);
+            document.getElementById('total-previstos').textContent = formatarMoeda(totalPrevistos);
+            
             document.getElementById('qtd-servicos').textContent = numServicos;
             document.getElementById('qtd-saidas').textContent = numDespesas;
-            document.getElementById('total-previstos').textContent = formatarMoeda(totalPrevistos);
-            document.getElementById('qtd-previstos').textContent = qtdPrevistos;
-
-            await carregarProximosServicos();
+            document.getElementById('qtd-previstos').textContent = numPendentes;
 
         } catch (error) {
             console.error('Erro ao carregar resumo:', error);
-            alert('Erro ao carregar resumo financeiro: ' + error.message);
+            showToast('Erro ao carregar resumo financeiro', 'error');
         }
     }
 
@@ -102,39 +123,35 @@ document.addEventListener('DOMContentLoaded', () => {
             hoje.setHours(0, 0, 0, 0);
             const dataHoje = hoje.toISOString().split('T')[0];
 
-            // Query simplificada
             const servicosSnapshot = await db.collection('servicos')
-                .orderBy('dataPrevista')
+                .where('status', '==', 'pendente')
+                .where('data', '>=', dataHoje)
+                .orderBy('data', 'asc')
                 .get();
 
             const container = document.getElementById('proximos-servicos');
-            container.innerHTML = '';
-
-            // Filtrar em memória
-            const servicosFiltrados = servicosSnapshot.docs
-                .map(doc => ({id: doc.id, ...doc.data()}))
-                .filter(servico => 
-                    servico.status === 'pendente' && 
-                    servico.dataPrevista >= dataHoje
-                )
-                .sort((a, b) => a.dataPrevista.localeCompare(b.dataPrevista));
-
-            if (servicosFiltrados.length === 0) {
+            
+            if (servicosSnapshot.empty) {
                 container.innerHTML = '<p class="texto-info">Nenhum serviço previsto</p>';
                 return;
             }
 
-            servicosFiltrados.forEach(servico => {
+            container.innerHTML = '';
+            servicosSnapshot.forEach(doc => {
+                const servico = doc.data();
                 const div = document.createElement('div');
                 div.className = 'servico-item card expansivel';
                 div.innerHTML = `
                     <div class="card-header" onclick="toggleExpansivel(this)">
-                        <h3>${servico.tipo} - ${servico.clienteNome}</h3>
+                        <div class="header-content">
+                            <h3>${servico.tipo} - ${servico.clienteNome}</h3>
+                            <span>R$ ${formatarMoeda(servico.valor)}</span>
+                        </div>
                         <i class="fas fa-chevron-down"></i>
                     </div>
                     <div class="card-content" style="display: none;">
                         <div class="servico-info">
-                            <p><i class="fas fa-calendar"></i> Data Prevista: ${formatarData(servico.dataPrevista)}</p>
+                            <p><i class="fas fa-calendar"></i> Data Prevista: ${formatarData(servico.data)}</p>
                             <p><i class="fas fa-ruler"></i> Área: ${servico.tamanhoArea} hectares</p>
                             <p><i class="fas fa-money-bill-wave"></i> Valor: R$ ${formatarMoeda(servico.valor)}</p>
                             <p><i class="fas fa-credit-card"></i> Forma de Pagamento: ${servico.formaPagamento}</p>
@@ -150,6 +167,62 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    // Buscar valores previstos (pagamentos pendentes de serviços)
+    async function calcularValoresPrevistos() {
+        try {
+            let totalPrevistos = 0;
+            let numPendentes = 0;
+            const hoje = new Date().toISOString().split('T')[0];
+
+            // Buscar serviços pendentes
+            const servicosPendentesSnapshot = await db.collection('servicos')
+                .where('status', '==', 'pendente')
+                .where('data', '>=', hoje)
+                .get();
+
+            // Somar valores dos serviços pendentes
+            servicosPendentesSnapshot.forEach(doc => {
+                const servico = doc.data();
+                totalPrevistos += parseFloat(servico.valor) || 0;
+                numPendentes++;
+            });
+
+            // Buscar serviços realizados com pagamento pendente
+            const servicosRealizadosSnapshot = await db.collection('servicos')
+                .where('status', '==', 'realizado')
+                .get();
+
+            // Verificar pagamentos pendentes dos serviços realizados
+            servicosRealizadosSnapshot.forEach(doc => {
+                const servico = doc.data();
+                if (servico.pagamento) {
+                    const { status, valorTotal, valorPago = 0 } = servico.pagamento;
+                    if (status === 'pendente' || status === 'parcial') {
+                        const valorPendente = parseFloat(valorTotal) - parseFloat(valorPago);
+                        if (valorPendente > 0) {
+                            totalPrevistos += valorPendente;
+                            numPendentes++;
+                        }
+                    }
+                } else {
+                    // Se não tem informação de pagamento, considera o valor total como pendente
+                    totalPrevistos += parseFloat(servico.valor) || 0;
+                    numPendentes++;
+                }
+            });
+
+            return { totalPrevistos, numPendentes };
+        } catch (error) {
+            console.error('Erro ao calcular valores previstos:', error);
+            throw error;
+        }
+    }
+
+    // Expor funções globalmente
+    window.carregarResumoFinanceiro = carregarResumoFinanceiro;
+    window.carregarProximosServicos = carregarProximosServicos;
+
     // Carregar dados iniciais
-    carregarResumoHome();
+    await carregarResumoFinanceiro();
+    await carregarProximosServicos();
 }); 

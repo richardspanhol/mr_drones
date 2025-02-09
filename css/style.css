@@ -1040,3 +1040,31 @@ nav a:hover, nav a.active {
 @keyframes spin {
     to { transform: rotate(360deg); }
 }
+
+/* Adicionar aos estilos existentes */
+.filtro-container {
+    margin: 15px 0;
+    padding: 10px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.filtro-container .form-group {
+    margin-bottom: 0;
+}
+
+.filtro-container select {
+    width: 200px;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    background-color: white;
+    font-size: 14px;
+}
+
+.filtro-container label {
+    margin-right: 10px;
+    font-weight: bold;
+    color: #666;
+}

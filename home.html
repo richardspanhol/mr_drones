@@ -28,6 +28,21 @@
             <section class="dashboard">
                 <div class="card">
                     <h2>Resumo Financeiro</h2>
+                    <div class="filtro-container">
+                        <div class="form-group">
+                            <label for="periodo">Período</label>
+                            <select id="periodo" onchange="carregarResumoFinanceiro()">
+                                <option value="mes-atual" selected>Mês Atual</option>
+                                <option value="30">Últimos 30 dias</option>
+                                <option value="60">Últimos 60 dias</option>
+                                <option value="90">Últimos 90 dias</option>
+                                <option value="365">Último ano</option>
+                                <option value="proximo-mes">Próximo Mês</option>
+                                <option value="futuros">Todos os Futuros</option>
+                                <option value="todos">Todos</option>
+                            </select>
+                        </div>
+                    </div>
                     <div class="resumo-info">
                         <div class="info-item">
                             <h3>Saldo em Caixa</h3>
