@@ -569,4 +569,83 @@ document.addEventListener('DOMContentLoaded', () => {
             throw error;
         }
     }
+
+    // Mover a função marcarRealizado para o escopo global
+    window.marcarRealizado = async (id) => {
+        try {
+            const servicoRef = db.collection('servicos').doc(id);
+            const servicoDoc = await servicoRef.get();
+            
+            if (!servicoDoc.exists) {
+                throw new Error('Serviço não encontrado');
+            }
+
+            // Confirmar data de execução
+            const dataExecucao = await confirmarDataExecucao();
+            if (!dataExecucao) return;
+
+            // Buscar dados do serviço
+            const servico = servicoDoc.data();
+            
+            // Confirmar pagamento
+            const pagamento = await confirmarPagamento(servico.valor);
+            if (!pagamento) return;
+
+            const atualizacao = {
+                status: 'realizado',
+                dataExecucao: ajustarData(dataExecucao),
+                dataRealizacao: firebase.firestore.FieldValue.serverTimestamp(),
+                pagamento: {
+                    status: pagamento.status,
+                    valorPago: pagamento.valorPago,
+                    valorTotal: servico.valor,
+                    dataPagamentoPrevisto: pagamento.dataPagamentoPrevisto ? 
+                        ajustarData(pagamento.dataPagamentoPrevisto) : null
+                }
+            };
+
+            // Se houve pagamento (integral ou parcial), atualizar saldo
+            if (pagamento.valorPago > 0) {
+                const saldoRef = db.collection('financeiro').doc('saldo');
+                await db.runTransaction(async (transaction) => {
+                    const saldoDoc = await transaction.get(saldoRef);
+                    const saldoAtual = saldoDoc.data()?.valor || 0;
+                    
+                    // Atualizar saldo
+                    transaction.update(saldoRef, { 
+                        valor: saldoAtual + pagamento.valorPago 
+                    });
+
+                    // Atualizar serviço
+                    transaction.update(servicoRef, atualizacao);
+                });
+
+                // Registrar movimentação financeira
+                await db.collection('movimentacoes').add({
+                    tipo: 'entrada',
+                    categoria: 'servico',
+                    descricao: `Pagamento de serviço - ${servico.tipo} para ${servico.clienteNome}`,
+                    valor: pagamento.valorPago,
+                    data: new Date().toISOString().split('T')[0],
+                    formaPagamento: servico.formaPagamento,
+                    servicoId: id
+                });
+            } else {
+                // Se não houve pagamento, apenas atualiza o serviço
+                await servicoRef.update(atualizacao);
+            }
+
+            // Recarregar a lista de serviços
+            await carregarServicos();
+            
+            // Atualizar resumo financeiro se a função existir
+            if (window.carregarResumoFinanceiro) {
+                await window.carregarResumoFinanceiro();
+            }
+
+        } catch (error) {
+            console.error('Erro ao marcar serviço como realizado:', error);
+            alert('Não foi possível marcar o serviço como realizado: ' + error.message);
+        }
+    };
 }); 
